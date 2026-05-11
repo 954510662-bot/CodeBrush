@@ -65,7 +65,7 @@ function createDefaultLayer(type: LayerType, x: number, y: number): Layer {
 function Editor() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const { currentTool, currentProjectId, projects, addLayer, selectLayers, updateViewport, selectTool } = useStore()
+  const { currentTool, currentProjectId, projects, addLayer, selectLayers, updateViewport, selectTool, createTextLayer } = useStore()
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [viewportStart, setViewportStart] = useState({ x: 0, y: 0 })
@@ -240,6 +240,30 @@ function Editor() {
           ctx.strokeRect(0, 0, width, height)
           break
         }
+
+        case 'text': {
+          const text = (layer.metadata.text as string) || '双击编辑文本'
+          const fontSize = (layer.metadata.fontSize as number) || 16
+          const fontFamily = (layer.metadata.fontFamily as string) || 'Inter'
+          ctx.font = `${fontSize}px ${fontFamily}`
+          ctx.textBaseline = 'top'
+          const metrics = ctx.measureText(text)
+          width = metrics.width + 20
+          height = fontSize + 10
+          applyEffects(ctx, layer.style.effects)
+          ctx.fillText(text, 0, 0)
+          break
+        }
+
+        case 'image': {
+          width = (layer.metadata.width as number) || 200
+          height = (layer.metadata.height as number) || 150
+          applyEffects(ctx, layer.style.effects)
+          const img = new Image()
+          img.src = (layer.metadata.imageData as string) || ''
+          ctx.drawImage(img, 0, 0, width, height)
+          break
+        }
       }
 
       ctx.restore()
@@ -301,8 +325,11 @@ function Editor() {
       } else {
         selectLayers(currentProjectId, [])
       }
+    } else if (currentTool === 'text') {
+      createTextLayer(currentProjectId, x, y)
+      selectTool('select')
     } else {
-      const layerTypes: ToolType[] = ['rectangle', 'ellipse', 'polygon', 'line', 'frame', 'text']
+      const layerTypes: ToolType[] = ['rectangle', 'ellipse', 'polygon', 'line', 'frame']
       if (!layerTypes.includes(currentTool)) return
       
       const layerType = currentTool as LayerType
@@ -330,7 +357,7 @@ function Editor() {
       addLayer(currentProjectId, newLayer)
       selectTool('select')
     }
-  }, [currentTool, currentProjectId, currentProject, addLayer, selectLayers, selectTool])
+  }, [currentTool, currentProjectId, currentProject, addLayer, selectLayers, selectTool, createTextLayer])
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !currentProjectId || !currentProject) return

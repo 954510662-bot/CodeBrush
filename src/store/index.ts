@@ -33,6 +33,11 @@ interface EditorState {
   updateComponentProperty: (propertyId: string, updates: Partial<ComponentProperty>) => void
   deleteComponentProperty: (propertyId: string) => void
   createInstance: (projectId: string, componentId: string, variantId: string, x: number, y: number) => void
+  
+  createTextLayer: (projectId: string, x: number, y: number, text?: string) => void
+  updateTextStyle: (projectId: string, layerId: string, style: Partial<{ fontSize: number; fontFamily: string; color: { r: number; g: number; b: number; a: number } }>) => void
+  createImageLayer: (projectId: string, x: number, y: number, imageData: string, width: number, height: number) => void
+  updateImageLayer: (projectId: string, layerId: string, updates: Partial<{ width: number; height: number; imageData: string }>) => void
 }
 
 const defaultTransform: Transform = {
@@ -517,6 +522,174 @@ export const useStore = create<EditorState>((set, get) => ({
     set((state) => ({
       componentProperties: state.componentProperties.filter(p => p.id !== propertyId)
     }))
+  },
+  
+  createTextLayer: (projectId: string, x: number, y: number, text: string = '') => {
+    const newLayer: Layer = {
+      id: `${Date.now()}`,
+      type: 'text',
+      name: '文本',
+      parentId: null,
+      children: [],
+      transform: { ...defaultTransform, x, y },
+      style: {
+        fills: [{ type: 'solid', color: { r: 0, g: 0, b: 0, a: 1 }, visible: true }],
+        strokes: [],
+        effects: []
+      },
+      locked: false,
+      visible: true,
+      opacity: 1,
+      blendMode: 'normal',
+      metadata: { text, fontSize: 16, fontFamily: 'Inter' }
+    }
+    
+    set((state) => ({
+      projects: state.projects.map(p => 
+        p.id === projectId 
+          ? { ...p, layers: [...p.layers, newLayer], selectedLayerIds: [newLayer.id] }
+          : p
+      ),
+      history: [...state.history.slice(0, state.historyIndex + 1), {
+        id: `${Date.now()}`,
+        type: 'create',
+        layerId: newLayer.id,
+        newState: newLayer
+      }],
+      historyIndex: state.historyIndex + 1
+    }))
+  },
+  
+  createImageLayer: (projectId: string, x: number, y: number, imageData: string, width: number, height: number) => {
+    const newLayer: Layer = {
+      id: `${Date.now()}`,
+      type: 'image',
+      name: '图片',
+      parentId: null,
+      children: [],
+      transform: { ...defaultTransform, x, y },
+      style: {
+        fills: [],
+        strokes: [],
+        effects: []
+      },
+      locked: false,
+      visible: true,
+      opacity: 1,
+      blendMode: 'normal',
+      metadata: { imageData, width, height }
+    }
+    
+    set((state) => ({
+      projects: state.projects.map(p => 
+        p.id === projectId 
+          ? { ...p, layers: [...p.layers, newLayer], selectedLayerIds: [newLayer.id] }
+          : p
+      ),
+      history: [...state.history.slice(0, state.historyIndex + 1), {
+        id: `${Date.now()}`,
+        type: 'create',
+        layerId: newLayer.id,
+        newState: newLayer
+      }],
+      historyIndex: state.historyIndex + 1
+    }))
+  },
+  
+  updateImageLayer: (projectId: string, layerId: string, updates: Partial<{ width: number; height: number; imageData: string }>) => {
+    set((state) => {
+      let previousState: Layer | undefined
+      
+      const projects = state.projects.map(p => {
+        if (p.id === projectId) {
+          return {
+            ...p,
+            layers: p.layers.map(layer => {
+              if (layer.id === layerId) {
+                previousState = { ...layer }
+                return {
+                  ...layer,
+                  metadata: {
+                    ...layer.metadata,
+                    width: updates.width !== undefined ? updates.width : layer.metadata.width,
+                    height: updates.height !== undefined ? updates.height : layer.metadata.height,
+                    imageData: updates.imageData !== undefined ? updates.imageData : layer.metadata.imageData
+                  }
+                }
+              }
+              return layer
+            })
+          }
+        }
+        return p
+      })
+      
+      return {
+        projects,
+        history: [...state.history.slice(0, state.historyIndex + 1), {
+          id: `${Date.now()}`,
+          type: 'update',
+          layerId,
+          previousState,
+          newState: projects.find(p => p.id === projectId)?.layers.find(l => l.id === layerId)
+        }],
+        historyIndex: state.historyIndex + 1
+      }
+    })
+  },
+  
+  updateTextStyle: (projectId: string, layerId: string, style: Partial<{ fontSize: number; fontFamily: string; color: { r: number; g: number; b: number; a: number } }>) => {
+    set((state) => {
+      let previousState: Layer | undefined
+      
+      const projects = state.projects.map(p => {
+        if (p.id === projectId) {
+          return {
+            ...p,
+            layers: p.layers.map(layer => {
+              if (layer.id === layerId) {
+                previousState = { ...layer }
+                const newMetadata = {
+                  ...layer.metadata,
+                }
+                if (style.fontSize !== undefined) {
+                  newMetadata.fontSize = style.fontSize
+                }
+                if (style.fontFamily !== undefined) {
+                  newMetadata.fontFamily = style.fontFamily
+                }
+                let newStyle = layer.style
+                if (style.color !== undefined) {
+                  newStyle = {
+                    ...layer.style,
+                    fills: [{ type: 'solid' as const, color: style.color, visible: true }]
+                  }
+                }
+                return {
+                  ...layer,
+                  metadata: newMetadata,
+                  style: newStyle
+                }
+              }
+              return layer
+            })
+          }
+        }
+        return p
+      })
+      
+      return {
+        projects,
+        history: [...state.history.slice(0, state.historyIndex + 1), {
+          id: `${Date.now()}`,
+          type: 'update',
+          layerId,
+          previousState,
+          newState: projects.find(p => p.id === projectId)?.layers.find(l => l.id === layerId)
+        }],
+        historyIndex: state.historyIndex + 1
+      }
+    })
   },
   
   createInstance: (projectId, componentId, variantId, x, y) => {

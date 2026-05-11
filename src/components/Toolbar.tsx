@@ -17,6 +17,7 @@ import {
   Download
 } from 'lucide-react'
 import { ToolType } from '../types'
+import ImageUploader from './ImageUploader'
 
 const tools: { type: ToolType; icon: typeof MousePointer2; label: string }[] = [
   { type: 'select', icon: MousePointer2, label: '选择工具' },
@@ -78,6 +79,7 @@ function Toolbar() {
             <Icon size={20} />
           </button>
         ))}
+        <ImageUploader />
       </div>
 
       <div className="border-t border-gray-700 w-full px-2 py-2 mt-auto">
