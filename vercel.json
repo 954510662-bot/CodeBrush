@@ -6,13 +6,14 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "buildCommand": "pnpm run build"
+        "buildCommand": "pnpm install && pnpm run build"
       }
     }
   ],
   "routes": [
     {
       "src": "/assets/(.*)",
+      "headers": { "Cache-Control": "max-age=31536000, immutable" },
       "dest": "/assets/$1"
     },
     {
@@ -21,6 +22,9 @@
     }
   ],
   "env": {
-    "NODE_VERSION": "18"
-  }
+    "NODE_VERSION": "18",
+    "CI": "true"
+  },
+  "installCommand": "pnpm install",
+  "framework": "vite"
 }

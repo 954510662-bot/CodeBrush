@@ -9,4 +9,22 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'zustand'],
+          lucide: ['lucide-react'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
 })
