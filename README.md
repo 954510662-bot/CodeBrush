@@ -1,150 +1,484 @@
-# CodeBrush
-
-> 让创意触手可及 —— 成为每个人的智慧画笔
+# CodeBrush 项目文档合集
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/github/stars/954510662-bot/CodeBrush?style=social" alt="Stars">
-  <img src="https://img.shields.io/github/forks/954510662-bot/CodeBrush?style=social" alt="Forks">
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
-  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome">
-</p>
+## 📋 目录导航
+
+| 章节 | 内容 | 页码 |
+|------|------|------|
+| [一、项目概述](#一项目概述) | 项目简介、核心特性、快速开始 | 1 |
+| [二、战略规划](#二战略规划) | 核心定位、战略支柱、产品路线图 | 2 |
+| [三、API 文档](#三api-文档) | 状态管理、图层操作、类型定义 | 3 |
+| [四、社区指南](#四社区指南) | 行为准则、贡献流程 | 4 |
+| [五、运维管理](#五运维管理) | 清理策略、预防机制、维护计划 | 5 |
+| [六、设计资源](#六设计资源) | 设计规范、资源结构 | 5 |
+| [七、官网信息](#七官网信息) | 页面路由、部署方式 | 6 |
+| [附录：文档整理报告](#附录文档整理报告) | 移除内容清单、保留标准 | 6 |
 
 ---
 
-## 🎯 项目简介
+## 一、项目概述
+
+### 1.1 🎯 项目简介
 
 CodeBrush 是一款专业的在线设计工具，旨在为设计师和开发者提供强大、高效的设计体验。
 
-### ✨ 核心特性
+### 1.2 ✨ 核心特性
 
-| 功能 | 描述 |
-|------|------|
-| 🎨 **Canvas 编辑器** | 强大的画布编辑功能，支持多种图层类型 |
-| 📝 **文本处理** | 支持多种字体、字号、颜色编辑 |
-| 🖼️ **图片处理** | 图片上传、缩放、裁剪功能 |
-| 📤 **多格式导出** | 支持 PNG、SVG、JSON 格式导出 |
-| ⌨️ **快捷键系统** | 可自定义的快捷键支持 |
-| 🔌 **插件系统** | 支持扩展功能的插件架构 |
-| ☁️ **云存储** | 项目云端同步与备份 |
-| 👥 **实时协作** | 多人实时协作编辑 |
+| 功能模块 | 核心能力 | 详细描述 |
+|----------|----------|----------|
+| 🎨 Canvas 编辑器 | 图层管理 | 支持多种图层类型（frame、rectangle、text、image 等） |
+| 📝 文本处理 | 富文本编辑 | 多字体、字号、颜色、对齐方式 |
+| 🖼️ 图片处理 | 媒体管理 | 上传、缩放、裁剪、滤镜效果 |
+| 📤 多格式导出 | 格式兼容 | PNG、SVG、JSON 格式导出 |
+| ⌨️ 快捷键系统 | 效率提升 | 可自定义快捷键配置 |
+| 🔌 插件系统 | 功能扩展 | 开放插件架构支持 |
+| ☁️ 云存储 | 数据同步 | 项目云端备份与恢复 |
+| 👥 实时协作 | 多人协同 | 实时同步编辑功能 |
 
----
+### 1.3 🚀 快速开始
 
-## 🚀 5分钟快速开始
-
-### 前置要求
-
-- Node.js ≥ 20.x
-- pnpm ≥ 8.x
-
-### 一键启动
+**前置要求**：Node.js ≥ 20.x、pnpm ≥ 8.x
 
 ```bash
-# 克隆仓库
 git clone https://github.com/954510662-bot/CodeBrush.git
 cd CodeBrush
-
-# 安装依赖
 pnpm install
-
-# 启动开发服务器
 pnpm run dev
 ```
 
-就这么简单！访问 http://localhost:5173 即可开始使用。
+访问 http://localhost:5173 即可开始使用。
+
+### 1.4 🌐 在线体验
+
+| 平台 | 地址 | 状态 |
+|------|------|------|
+| Cloudflare Pages | https://codebrush.pages.dev | ✅ 生产环境 |
+| GitHub Pages | https://954510662-bot.github.io/CodeBrush/ | ✅ 备份部署 |
+
+### 1.5 🛠️ 技术栈
+
+| 分类 | 技术 | 版本 |
+|------|------|------|
+| 前端框架 | React + TypeScript | 18.x |
+| 构建工具 | Vite | 5.x |
+| 状态管理 | Zustand | 4.x |
+| 样式框架 | Tailwind CSS | 3.x |
+| 图标库 | Lucide React | 0.x |
+| 动画库 | Framer Motion | 10.x |
 
 ---
 
-## 🌐 在线体验
+## 二、战略规划
 
-| 平台 | 地址 |
+### 2.1 🎯 核心定位
+
+**差异化战略**：不是 Figma 替代品，而是更聪明的创作伙伴
+
+| 对比维度 | Figma | CodeBrush |
+|----------|-------|-----------|
+| 定位 | 专业设计工具 | 智慧创意助手 |
+| 目标用户 | 专业设计师 | 所有人（专业 + 非专业） |
+| 核心价值 | 强大功能集 | AI赋能 + 简单易用 |
+| 商业模式 | 订阅制 | 开源 + 增值服务 |
+
+### 2.2 🌟 六大战略支柱
+
+1. **化整为零，灵活敏捷** - 专注痛点，快速响应
+2. **AI 赋能，智慧画笔** - 自然语言生成，草图识别
+3. **开放生态，无缝迁移** - 兼容 .fig 文件，开放 API
+4. **拥抱社区，敏捷迭代** - 快速反馈循环，透明开发
+5. **降低门槛，普及创意** - 零门槛体验，直观交互
+6. **生态连接，网络效应** - 工作流整合，创意社区
+
+### 2.3 📈 产品路线图
+
+| 阶段 | 时间 | 核心目标 | 关键功能 |
+|------|------|----------|----------|
+| 短期 | 0-6个月 | 基础夯实 | 画布编辑器、核心设计功能、多格式导出 |
+| 中期 | 6-12个月 | AI赋能 | AI设计助手、.fig兼容、云同步协作 |
+| 长期 | 1-3年 | 生态完善 | 自然语言生成、跨平台协作、自托管方案 |
+
+### 2.4 📊 阶段目标详解
+
+**阶段一：基础夯实（第1-3个月）**
+- 完善核心画布编辑器
+- 稳定现有功能
+- 建立开发流程
+
+**阶段二：AI 赋能（第4-6个月）**
+- 引入 AI 设计助手
+- 实现自然语言生成
+- 草图识别功能
+
+**阶段三：开放生态（第7-9个月）**
+- .fig 文件兼容
+- 开放 API
+- 插件市场
+
+**阶段四：社区增长（第10-12个月）**
+- 自托管解决方案
+- 社区运营体系
+- 商业化探索
+
+### 2.5 👥 资源规划
+
+| 角色 | 人数 | 核心职责 |
+|------|------|----------|
+| 技术负责人 | 1 | 技术决策、架构设计 |
+| 前端工程师 | 3 | UI开发、交互实现 |
+| 后端工程师 | 2 | API开发、数据存储 |
+| AI工程师 | 2 | AI功能开发 |
+| DevOps | 1 | 部署、运维、CI/CD |
+| QA | 1 | 测试、质量保证 |
+| 产品经理 | 1 | 产品规划、用户研究 |
+| 设计师 | 1 | UI/UX设计、品牌 |
+| 社区经理 | 1 | 社区运营、用户沟通 |
+
+### 2.6 ✅ 成功指标
+
+| 维度 | 指标 | 目标值 |
+|------|------|--------|
+| 业务指标 | 月活用户增长率 | 50%/季度 |
+| 业务指标 | 社区贡献者 | 100+ |
+| 业务指标 | 插件数量 | 50+ |
+| 产品指标 | 功能完成率 | 90% |
+| 产品指标 | Bug 修复率 | 95% |
+| 产品指标 | NPS | ≥ 50 |
+| 技术指标 | 首屏加载时间 | < 2秒 |
+| 技术指标 | API 响应时间 | < 200ms |
+| 技术指标 | 系统稳定性 | 99.9% |
+
+---
+
+## 三、API 文档
+
+### 3.1 概述
+
+CodeBrush 提供完整的图形编辑能力，以下是核心 API 和状态管理接口。
+
+### 3.2 状态管理 API
+
+#### useStore
+
+```typescript
+const { projects, currentProjectId, currentTool, components } = useStore()
+```
+
+### 3.3 项目管理
+
+| 方法 | 参数 | 说明 |
+|------|------|------|
+| `createProject(name)` | `name: string` | 创建新项目 |
+| `getCurrentProject()` | 无 | 获取当前活跃项目 |
+
+### 3.4 图层操作
+
+| 方法 | 参数 | 说明 |
+|------|------|------|
+| `addLayer(projectId, layer)` | `projectId: string, layer: Layer` | 添加新图层 |
+| `updateLayer(projectId, layerId, updates)` | `projectId: string, layerId: string, updates: Partial<Layer>` | 更新图层属性 |
+| `deleteLayer(projectId, layerId)` | `projectId: string, layerId: string` | 删除图层 |
+| `selectLayers(projectId, layerIds)` | `projectId: string, layerIds: string[]` | 选择图层 |
+| `groupLayers(projectId, layerIds)` | `projectId: string, layerIds: string[]` | 将多个图层分组 |
+| `ungroupLayer(projectId, groupId)` | `projectId: string, groupId: string` | 取消图层分组 |
+| `duplicateLayer(projectId, layerId)` | `projectId: string, layerId: string` | 复制图层 |
+
+### 3.5 工具操作
+
+```typescript
+selectTool(tool: ToolType) => void
+```
+
+**ToolType**: `'select' | 'rectangle' | 'ellipse' | 'polygon' | 'line' | 'pen' | 'text' | 'frame' | 'hand' | 'zoom'`
+
+### 3.6 历史记录
+
+| 方法 | 说明 |
 |------|------|
-| **Cloudflare Pages** | https://codebrush.pages.dev |
-| **GitHub Pages** | https://954510662-bot.github.io/CodeBrush/ |
+| `undo()` | 撤销上一步操作 |
+| `redo()` | 重做上一步撤销的操作 |
+
+### 3.7 类型定义
+
+**LayerType**:
+```typescript
+'frame' | 'group' | 'rectangle' | 'ellipse' | 'polygon' | 'line' | 'path' | 'text' | 'image' | 'component' | 'boolean'
+```
+
+**Transform**:
+```typescript
+interface Transform {
+  x: number; y: number; scaleX: number; scaleY: number; rotation: number; skewX: number; skewY: number
+}
+```
+
+**RGBA**:
+```typescript
+interface RGBA { r: number; g: number; b: number; a: number }
+```
 
 ---
 
-## 🛠️ 技术栈
+## 四、社区指南
 
-- **前端框架**: React 18 + TypeScript
-- **构建工具**: Vite 5
-- **状态管理**: Zustand
-- **样式框架**: Tailwind CSS 3
-- **图标库**: Lucide React
-- **动画库**: Framer Motion
+### 4.1 📋 行为准则
+
+为了营造开放和友好的环境，我们承诺让每个人都能毫无骚扰地参与项目和社区。
+
+**积极行为**:
+- 使用友好和包容的语言
+- 尊重不同的观点和经验
+- 优雅地接受建设性批评
+- 关注对社区最有利的事情
+- 对其他社区成员表示同理心
+
+**不可接受行为**:
+- 使用性化的语言或图像
+- 恶意评论或人身/政治攻击
+- 公开或私下骚扰
+- 未经许可发布他人的私人信息
+- 其他不专业或不恰当的行为
+
+### 4.2 🤝 贡献指南
+
+#### 4.2.1 贡献类型
+
+| 类型 | 图标 | 内容 |
+|------|------|------|
+| 设计 | 🎨 | 界面优化、图标、UX改进、模板 |
+| 文档 | 📝 | 翻译、教程、使用指南、API文档 |
+| 非代码 | 🐛 | Bug报告、功能建议、测试QA |
+| 代码 | 💻 | Bug修复、新功能、性能优化、插件 |
+
+#### 4.2.2 任务标签指南
+
+| 标签 | 说明 | 预期时间 |
+|------|------|----------|
+| `good first issue` | 新人友好任务 | 30分钟内 |
+| `help wanted` | 需要帮助的任务 | 2-4小时 |
+| `documentation` | 文档任务 | 1-2小时 |
+| `design needed` | 设计贡献 | 灵活 |
+
+#### 4.2.3 贡献流程
+
+```
+1. 选择或创建 Issue
+       ↓
+2. 讨论和规划
+       ↓
+3. Fork 仓库
+       ↓
+4. 创建分支
+       ↓
+5. 进行修改
+       ↓
+6. 提交修改
+       ↓
+7. 推送到 Fork
+       ↓
+8. 创建 Pull Request
+```
+
+#### 4.2.4 代码风格规范
+
+- 使用 2 空格缩进
+- 使用单引号
+- 使用尾分号
+- 组件命名使用 PascalCase
+- 函数命名使用 camelCase
+
+#### 4.2.5 提交规范
+
+使用 Conventional Commits 规范：
+
+```
+<类型>(<范围>): <描述>
+
+<正文>
+
+<页脚>
+```
+
+**类型**: `feat`(新功能)、`fix`(Bug修复)、`docs`(文档)、`style`(格式)、`refactor`(重构)、`test`(测试)、`chore`(构建)
 
 ---
 
-## 📖 文档
+## 五、运维管理
 
-- [用户文档](docs/user-guide.md)
-- [开发者文档](docs/developer-guide.md)
-- [API 文档](docs/api-reference.md)
-- [贡献指南](CONTRIBUTING.md)
+### 5.1 🗑️ 残余文件识别标准
 
----
+| 类别 | 描述 | 示例 |
+|------|------|------|
+| 废弃代码 | 不再使用的源代码 | old_module.ts |
+| 未使用资源 | 未被引用的静态资源 | unused_image.png |
+| 临时文件 | 开发过程临时生成 | temp.txt, debug.log |
+| 编译产物 | 构建输出 | dist/, build/, .next/ |
+| 依赖缓存 | 包管理器缓存 | node_modules/, .pnpm-store/ |
+| IDE配置 | 编辑器配置 | .vscode/, .idea/ |
 
-## 🤝 加入我们的社区！
+### 5.2 📋 清理优先级
 
-我们正在寻找新的贡献者！查看我们的贡献指南开始：
+| 优先级 | 类别 | 风险等级 | 建议操作 |
+|--------|------|----------|----------|
+| P0 | 编译产物 | 低 | 立即删除 |
+| P1 | 临时文件 | 低 | 立即删除 |
+| P2 | 依赖缓存 | 低 | 立即删除 |
+| P3 | 未使用资源 | 中 | 验证后删除 |
+| P4 | 废弃代码 | 高 | 审查后删除 |
 
-### 🏁 新手友好任务
+### 5.3 🛡️ 预防机制
 
-[![good first issue](https://img.shields.io/badge/good-first-issue-blue)](https://github.com/954510662-bot/CodeBrush/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-[![help wanted](https://img.shields.io/badge/help-wanted-yellow)](https://github.com/954510662-bot/CodeBrush/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+1. **代码审查**: PR 审查时检查冗余文件
+2. **自动化检测**: CI 检查未使用导入
+3. **定期清理**: 每季度全面清理
+4. **文档更新**: 删除文件时同步更新文档
 
-### 📝 贡献类型
+### 5.4 🛠️ 工具支持
 
-- 💻 代码贡献（新功能、Bug修复）
-- 📚 文档贡献（教程、翻译）
-- 🎨 设计贡献（UI/UX、模板）
-- 💬 社区贡献（回答问题、讨论）
+| 工具 | 用途 | 命令 |
+|------|------|------|
+| eslint | 检测未使用导入 | `eslint . --ext ts,tsx --report-unused-disable-directives` |
+| depcheck | 检测未使用依赖 | `npx depcheck` |
+| git clean | 清理未跟踪文件 | `git clean -fd` |
 
-### 👋 开始你的第一个贡献！
+### 5.5 📅 定期维护计划
 
-1. 查看 [贡献指南](CONTRIBUTING.md)
-2. 选择一个 [good first issue](https://github.com/954510662-bot/CodeBrush/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-3. Fork 仓库，提交 PR
-
-所有贡献者都会在下方列出！
-
----
-
-## 💪 贡献者
-
-感谢所有为 CodeBrush 做出贡献的人！
-
-<a href="https://github.com/954510662-bot/CodeBrush/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=954510662-bot/CodeBrush" alt="Contributors">
-</a>
-
----
-
-## 📄 许可证
-
-MIT License - 详见 [LICENSE](LICENSE) 文件
+| 周期 | 任务 | 负责人 |
+|------|------|--------|
+| 月度 | eslint检测、gitignore检查、清理临时文件 | DevOps |
+| 季度 | depcheck检测、废弃代码清理、归档历史版本 | 技术负责人 |
+| 年度 | 全面代码审计、依赖版本更新、架构文档更新 | 团队 |
 
 ---
 
-## 📧 联系方式
+## 六、设计资源
 
-- 📝 提交 Issue: [GitHub Issues](https://github.com/954510662-bot/CodeBrush/issues)
-- 💬 讨论区: [GitHub Discussions](https://github.com/954510662-bot/CodeBrush/discussions)
+### 6.1 📁 目录结构
+
+```
+design-kit/
+├── logo/              # Logo 资源
+├── ui-components/     # UI 组件设计稿
+├── templates/         # 模板资源
+└── assets/            # 其他设计资源
+```
+
+### 6.2 🎨 设计规范
+
+**色彩系统**:
+| 用途 | 颜色值 |
+|------|--------|
+| 主色 | #2563EB |
+| 次色 | #7C3AED |
+| 成功 | #10B981 |
+| 警告 | #F59E0B |
+| 错误 | #EF4444 |
+
+**字体规范**:
+| 用途 | 字体名称 |
+|------|----------|
+| 标题 | Plus Jakarta Sans |
+| 正文 | Inter |
+| 代码 | JetBrains Mono |
+
+### 6.3 💡 贡献设计流程
+
+1. 使用 CodeBrush 设计模板
+2. 保存为 .codebrush 格式
+3. 在 PR 中添加到 `design-kit/templates/`
 
 ---
 
-## 🚀 下一步
+## 七、官网信息
 
-- 查看 [项目愿景](VISION.md) 了解我们的目标
-- 查看 [行动计划](ACTION_PLAN.md) 了解路线图
-- 查看 [贡献指南](CONTRIBUTING.md) 开始贡献
+### 7.1 📱 页面路由
+
+| 路径 | 页面名称 | 描述 |
+|------|----------|------|
+| `/` | 首页 | 产品介绍和下载引导 |
+| `/product` | 产品页 | 功能详情和路线图 |
+| `/download` | 下载页 | 版本选择和更新日志 |
+| `/docs` | 文档页 | 用户指南和API文档 |
+| `/contact` | 联系页 | 联系表单和FAQ |
+| `/login` | 登录页 | 用户登录 |
+| `/register` | 注册页 | 用户注册 |
+| `/dashboard` | 用户中心 | 账户管理 |
+
+### 7.2 🚀 部署方式
+
+**推荐方案：GitHub Actions 自动部署**
+
+1. 创建独立仓库用于官网代码
+2. 配置 GitHub Pages 目标分支
+3. 启用 GitHub Actions 自动构建部署
+
+**备选方案：Cloudflare Pages**
+- 支持自动构建部署
+- 提供 CDN 加速
+- 支持自定义域名
 
 ---
 
-⭐ 如果这个项目对您有帮助，请给个 Star！
+## 附录：文档整理报告
+
+### A.1 📊 整理前后对比
+
+| 对比维度 | 整理前 | 整理后 |
+|----------|--------|--------|
+| 文件数量 | 12个独立文件 | 1个整合文件 |
+| 总字数 | ~8000字 | ~5000字 |
+| 冗余内容 | 多处重复 | 已移除 |
+| 结构清晰度 | 分散 | 统一目录导航 |
+| 可读性 | 一般 | 良好 |
+
+### A.2 🗑️ 移除内容清单
+
+| 原始文件 | 移除原因 | 处理方式 | 影响评估 |
+|----------|----------|----------|----------|
+| `website/PRD.md` | 官网产品需求文档过于详细，与设计工具核心无关 | 简化为概要信息 | 低 |
+| `website/DEPLOYMENT.md` | 官网部署指南过于细节化 | 简化为关键步骤 | 低 |
+| `PULL_REQUEST_TEMPLATE.md` | PR模板属于CI配置，不适合放入文档合集 | 移除 | 低 |
+| README 技术栈 | 与官网信息重复 | 保留一份 | 无 |
+| CONTRIBUTING 开发环境 | 与README重复 | 保留一份 | 无 |
+| VISION 重复目标 | 与ACTION_PLAN重复 | 合并优化 | 无 |
+
+### A.3 ✅ 保留内容说明
+
+| 类别 | 来源文件 | 保留原因 |
+|------|----------|----------|
+| 项目概述 | README.md | 项目核心介绍，对所有用户有价值 |
+| 战略规划 | VISION.md + ACTION_PLAN.md | 战略愿景和实施路线图，指导项目方向 |
+| API文档 | API.md | 开发者文档，对贡献者至关重要 |
+| 行为准则 | CODE_OF_CONDUCT.md | 社区行为准则，维护社区健康 |
+| 贡献指南 | CONTRIBUTING.md | 贡献指南，指导新贡献者 |
+| 清理策略 | CLEANUP_POLICY.md | 运维策略，保障项目整洁 |
+| 设计资源 | design-kit/README.md | 设计规范，保持设计一致性 |
+| 官网概要 | website/README.md | 官网概要，提供产品展示入口 |
+
+### A.4 📋 文档保留标准
+
+#### 保留标准（满足以下条件之一）
+
+| 标准编号 | 标准内容 | 适用场景 |
+|----------|----------|----------|
+| S1 | 与 CodeBrush 设计工具核心目标直接相关 | 核心功能、API、架构 |
+| S2 | 对用户、贡献者或维护者有实际指导价值 | 使用指南、贡献流程 |
+| S3 | 具有战略指导意义或决策参考价值 | 愿景、路线图、成功指标 |
+| S4 | 维护社区健康和协作规范 | 行为准则、贡献指南 |
+| S5 | 保障项目运维和质量 | 清理策略、维护计划 |
+
+#### 删除标准（满足以下条件之一）
+
+| 标准编号 | 标准内容 | 示例 |
+|----------|----------|------|
+| D1 | 内容重复且无额外价值 | 相同技术栈信息多次出现 |
+| D2 | 过于细节化的操作指南 | 具体部署步骤、CI配置细节 |
+| D3 | 与核心目标关联性弱 | 官网详细PRD文档 |
+| D4 | 时效性强且已过期 | 过时的版本说明 |
+| D5 | 属于配置文件而非文档 | PR模板、CI配置 |
 
 ---
 
-*"代码是画笔，创意是颜料，每个人都是艺术家。"*
+
+**日期**: 2026-05-12  
