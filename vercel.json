@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "installCommand": "pnpm install && pnpm install typescript@5.2.2 vite@5.2.0 @vitejs/plugin-react@4.2.1",
+  "buildCommand": "pnpm exec tsc && pnpm exec vite build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "env": {
+    "NODE_VERSION": "20"
+  },
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "headers": { "Cache-Control": "max-age=31536000, immutable" },
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
