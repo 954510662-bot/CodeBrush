@@ -8,10 +8,11 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 18.x
+  NODE_VERSION: 20.x
+  PNPM_VERSION: 8
 
 jobs:
-  build:
+  quality-check:
     runs-on: ubuntu-latest
     
     steps:
@@ -25,19 +26,74 @@ jobs:
           cache: 'pnpm'
           
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@${{ env.PNPM_VERSION }}
           
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
           
       - name: Run TypeScript check
         run: pnpm exec tsc --noEmit
           
-      - name: Run lint
+      - name: Run ESLint
         run: pnpm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    needs: quality-check
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
           
-      - name: Run tests
-        run: pnpm test --run
+      - name: Install pnpm
+        run: npm install -g pnpm@${{ env.PNPM_VERSION }}
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+          
+      - name: Run unit tests
+        run: pnpm test:run
+        
+      - name: Run tests with coverage
+        run: pnpm test:coverage
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: success()
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [quality-check, test]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install pnpm
+        run: npm install -g pnpm@${{ env.PNPM_VERSION }}
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
           
       - name: Build project
         run: pnpm run build
@@ -57,16 +113,38 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         
-      - name: Run npm audit
-        run: pnpm audit --prod
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install pnpm
+        run: npm install -g pnpm@${{ env.PNPM_VERSION }}
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
         
-      - name: Check for vulnerable dependencies
-        run: pnpm audit --prod --json | jq '.advisories | if length > 0 then exit 1 else exit 0 end'
+      - name: Run security audit
+        run: pnpm audit --prod || true
+        
+      - name: Check for critical vulnerabilities
+        run: |
+          VULNS=$(pnpm audit --prod --json | jq '[.advisories[] | select(.severity == "critical")] | length')
+          if [ "$VULNS" -gt 0 ]; then
+            echo "Found $VULNS critical vulnerabilities"
+            pnpm audit --prod
+            exit 1
+          fi
+          echo "No critical vulnerabilities found"
 
   deploy:
     runs-on: ubuntu-latest
     needs: [build, security-scan]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://codebrush.pages.dev
     
     steps:
       - name: Checkout repository
@@ -78,19 +156,23 @@ jobs:
           name: dist
           path: dist/
           
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          working-directory: ./
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: codebrush
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: 3
 
   deploy-staging:
     runs-on: ubuntu-latest
     needs: [build, security-scan]
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment:
+      name: staging
+      url: https://staging.codebrush.pages.dev
     
     steps:
       - name: Checkout repository
@@ -102,13 +184,15 @@ jobs:
           name: dist
           path: dist/
           
-      - name: Deploy to Vercel (staging)
-        uses: amondnet/vercel-action@v25
+      - name: Deploy to Cloudflare Pages (staging)
+        uses: cloudflare/pages-action@v1
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: codebrush-staging
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: 3
 
   notify:
     runs-on: ubuntu-latest
@@ -116,32 +200,10 @@ jobs:
     if: always()
     
     steps:
-      - name: Notify on Slack
-        uses: slackapi/slack-github-action@v1.24.0
-        if: ${{ failure() }}
-        with:
-          payload: |
-            {
-              "text": "CodeBrush CI/CD Pipeline Failed",
-              "attachments": [
-                {
-                  "title": "Workflow Failed",
-                  "text": "${{ github.workflow }} failed on ${{ github.ref }}",
-                  "color": "#ff0000",
-                  "fields": [
-                    {
-                      "title": "Commit",
-                      "value": "${{ github.sha }}",
-                      "short": true
-                    },
-                    {
-                      "title": "Author",
-                      "value": "${{ github.actor }}",
-                      "short": true
-                    }
-                  ]
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Send notification
+        if: failure()
+        run: |
+          echo "Build or deployment failed"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"

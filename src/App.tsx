@@ -4,6 +4,7 @@ import Toolbar from './components/Toolbar'
 import LayersPanel from './components/LayersPanel'
 import PropertiesPanel from './components/PropertiesPanel'
 import { useShortcuts } from './hooks/useShortcuts'
+import { useWebVitals } from './hooks/useWebVitals'
 
 function App() {
   const { 
@@ -19,6 +20,8 @@ function App() {
     projects,
     updateViewport
   } = useStore()
+
+  useWebVitals()
 
   const handleDelete = () => {
     if (!currentProjectId) return
