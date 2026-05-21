@@ -1,4 +1,4 @@
-import { Project } from '../types'
+import { Project, Layer } from '../types'
 
 function getProjectDimensions(project: Project): { width: number; height: number } {
   const frameLayer = project.layers.find(l => l.type === 'frame')
@@ -24,88 +24,94 @@ function getProjectDimensions(project: Project): { width: number; height: number
   }
 }
 
+function rgbaToString(color: { r: number; g: number; b: number; a: number } | undefined, fallback: string): string {
+  if (!color) return fallback
+  return `rgba(${color.r},${color.g},${color.b},${color.a})`
+}
+
+function renderLayerToSVG(layer: Layer, x: number, y: number, opacity: number): string {
+  switch (layer.type) {
+    case 'rectangle': {
+      const width = layer.metadata.width || 100
+      const height = layer.metadata.height || 100
+      const fill = rgbaToString(layer.style.fills?.[0]?.color, 'transparent')
+      const stroke = rgbaToString(layer.style.strokes?.[0]?.color, 'none')
+      const strokeWidth = layer.style.strokes?.[0]?.width || 0
+      
+      return `
+        <rect 
+          x="${x}" y="${y}" 
+          width="${width}" height="${height}" 
+          fill="${fill}"
+          stroke="${stroke}"
+          stroke-width="${strokeWidth}"
+          opacity="${opacity}"
+        />`
+    }
+      
+    case 'ellipse': {
+      const radiusX = (layer.metadata.width || 50) / 2
+      const radiusY = (layer.metadata.height || 50) / 2
+      const fill = rgbaToString(layer.style.fills?.[0]?.color, 'transparent')
+      const stroke = rgbaToString(layer.style.strokes?.[0]?.color, 'none')
+      const strokeWidth = layer.style.strokes?.[0]?.width || 0
+      
+      return `
+        <ellipse 
+          cx="${x + radiusX}" cy="${y + radiusY}" rx="${radiusX}" ry="${radiusY}"
+          fill="${fill}"
+          stroke="${stroke}"
+          stroke-width="${strokeWidth}"
+          opacity="${opacity}"
+        />`
+    }
+      
+    case 'text': {
+      const text = (layer.metadata.text as string) || ''
+      const fontSize = (layer.metadata.fontSize as number) || 16
+      const fontFamily = (layer.metadata.fontFamily as string) || 'Inter'
+      const fill = rgbaToString(layer.style.fills?.[0]?.color, '#000')
+      
+      return `
+        <text 
+          x="${x}" y="${y + fontSize}" 
+          font-size="${fontSize}" 
+          font-family="${fontFamily}"
+          fill="${fill}"
+          opacity="${opacity}"
+        >${text}</text>`
+    }
+      
+    case 'image': {
+      const imgData = layer.metadata.imageData as string
+      if (!imgData) return ''
+      
+      const width = layer.metadata.width || 200
+      const height = layer.metadata.height || 150
+      
+      return `
+        <image 
+          x="${x}" y="${y}" 
+          width="${width}" height="${height}" 
+          href="${imgData}"
+          opacity="${opacity}"
+        />`
+    }
+      
+    default:
+      return ''
+  }
+}
+
 export function generateSVG(project: Project): string {
   const { width, height } = getProjectDimensions(project)
-  let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`
-  
-  project.layers.forEach(layer => {
+  const svgContent = project.layers.map(layer => {
     const { x, y } = layer.transform
     const opacity = layer.opacity || 1
-    
-    switch (layer.type) {
-      case 'rectangle':
-        const rectWidth = layer.metadata.width || 100
-        const rectHeight = layer.metadata.height || 100
-        const rectFill = layer.style.fills?.[0]?.color
-        const rectStroke = layer.style.strokes?.[0]?.color
-        const strokeWidth = layer.style.strokes?.[0]?.width || 0
-        
-        svgContent += `
-          <rect 
-            x="${x}" y="${y}" 
-            width="${rectWidth}" height="${rectHeight}" 
-            fill="${rectFill ? `rgba(${rectFill.r},${rectFill.g},${rectFill.b},${rectFill.a})` : 'transparent'}"
-            stroke="${rectStroke ? `rgba(${rectStroke.r},${rectStroke.g},${rectStroke.b},${rectStroke.a})` : 'none'}"
-            stroke-width="${strokeWidth}"
-            opacity="${opacity}"
-          />`
-        break
-        
-      case 'ellipse':
-        const circleRadiusX = (layer.metadata.width || 50) / 2
-        const circleRadiusY = (layer.metadata.height || 50) / 2
-        const circleFill = layer.style.fills?.[0]?.color
-        const circleStroke = layer.style.strokes?.[0]?.color
-        const circleStrokeWidth = layer.style.strokes?.[0]?.width || 0
-        
-        svgContent += `
-          <ellipse 
-            cx="${x + circleRadiusX}" cy="${y + circleRadiusY}" rx="${circleRadiusX}" ry="${circleRadiusY}"
-            fill="${circleFill ? `rgba(${circleFill.r},${circleFill.g},${circleFill.b},${circleFill.a})` : 'transparent'}"
-            stroke="${circleStroke ? `rgba(${circleStroke.r},${circleStroke.g},${circleStroke.b},${circleStroke.a})` : 'none'}"
-            stroke-width="${circleStrokeWidth}"
-            opacity="${opacity}"
-          />`
-        break
-        
-      case 'text':
-        const text = (layer.metadata.text as string) || ''
-        const fontSize = (layer.metadata.fontSize as number) || 16
-        const fontFamily = (layer.metadata.fontFamily as string) || 'Inter'
-        const textColor = layer.style.fills?.[0]?.color
-        
-        svgContent += `
-          <text 
-            x="${x}" y="${y + fontSize}" 
-            font-size="${fontSize}" 
-            font-family="${fontFamily}"
-            fill="${textColor ? `rgba(${textColor.r},${textColor.g},${textColor.b},${textColor.a})` : '#000'}"
-            opacity="${opacity}"
-          >${text}</text>`
-        break
-        
-      case 'image':
-        const imgData = layer.metadata.imageData as string
-        if (imgData) {
-          const imgWidth = layer.metadata.width || 200
-          const imgHeight = layer.metadata.height || 150
-          svgContent += `
-            <image 
-              x="${x}" y="${y}" 
-              width="${imgWidth}" height="${imgHeight}" 
-              href="${imgData}"
-              opacity="${opacity}"
-            />`
-        }
-        break
-        
-      default:
-        break
-    }
-  })
+    return renderLayerToSVG(layer, x, y, opacity)
+  }).join('')
   
-  svgContent += '</svg>'
-  return svgContent
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${svgContent}</svg>`
 }
 
 export async function exportToPNG(project: Project, canvas: HTMLCanvasElement): Promise<string> {
@@ -126,7 +132,7 @@ export async function exportToPNG(project: Project, canvas: HTMLCanvasElement): 
       ctx.globalAlpha = layer.opacity || 1
       
       switch (layer.type) {
-        case 'rectangle':
+        case 'rectangle': {
           const rectWidth = layer.metadata.width || 100
           const rectHeight = layer.metadata.height || 100
           const rectFill = layer.style.fills?.[0]?.color
@@ -143,8 +149,9 @@ export async function exportToPNG(project: Project, canvas: HTMLCanvasElement): 
             ctx.strokeRect(x, y, rectWidth, rectHeight)
           }
           break
+        }
           
-        case 'ellipse':
+        case 'ellipse': {
           const ellipseWidth = layer.metadata.width || 50
           const ellipseHeight = layer.metadata.height || 50
           const ellipseRadiusX = ellipseWidth / 2
@@ -165,8 +172,9 @@ export async function exportToPNG(project: Project, canvas: HTMLCanvasElement): 
             ctx.stroke()
           }
           break
+        }
           
-        case 'text':
+        case 'text': {
           const text = (layer.metadata.text as string) || ''
           const fontSize = (layer.metadata.fontSize as number) || 16
           const fontFamily = (layer.metadata.fontFamily as string) || 'Inter'
@@ -176,8 +184,9 @@ export async function exportToPNG(project: Project, canvas: HTMLCanvasElement): 
           ctx.fillStyle = textColor ? `rgba(${textColor.r}, ${textColor.g}, ${textColor.b}, ${textColor.a})` : '#000'
           ctx.fillText(text, x, y + fontSize)
           break
+        }
           
-        case 'image':
+        case 'image': {
           const imgData = layer.metadata.imageData as string
           if (imgData) {
             const imgWidth = layer.metadata.width || 200
@@ -190,9 +199,7 @@ export async function exportToPNG(project: Project, canvas: HTMLCanvasElement): 
             img.src = imgData
           }
           break
-          
-        default:
-          break
+        }
       }
     })
     
