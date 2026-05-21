@@ -3,14 +3,11 @@ import { useStore } from '../store'
 
 describe('Editor Store', () => {
   beforeEach(() => {
-    const store = useStore.getState()
-    store.projects.forEach(p => {
-      if (p.id) {
-        useStore.setState({
-          projects: store.projects.filter(proj => proj.id !== p.id),
-          currentProjectId: null
-        })
-      }
+    useStore.setState({
+      projects: [],
+      currentProjectId: null,
+      history: [],
+      historyIndex: -1
     })
   })
 
